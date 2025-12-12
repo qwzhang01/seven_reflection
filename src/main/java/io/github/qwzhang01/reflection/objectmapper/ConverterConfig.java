@@ -1,5 +1,6 @@
 package io.github.qwzhang01.reflection.objectmapper;
 
+import java.time.*;
 import java.util.Date;
 import java.util.function.Function;
 
@@ -22,6 +23,17 @@ public class ConverterConfig {
 
     // 日期转换器
     private Function<Date, Object> dateConverter;
+
+    // Java 8+ 时间类型转换器
+    private Function<LocalDateTime, Object> localDateTimeConverter;
+    private Function<LocalDate, Object> localDateConverter;
+    private Function<LocalTime, Object> localTimeConverter;
+    private Function<ZonedDateTime, Object> zonedDateTimeConverter;
+    private Function<OffsetDateTime, Object> offsetDateTimeConverter;
+    private Function<OffsetTime, Object> offsetTimeConverter;
+    private Function<Instant, Object> instantConverter;
+    private Function<Duration, Object> durationConverter;
+    private Function<Period, Object> periodConverter;
 
     public ConverterConfig() {
     }
@@ -68,6 +80,87 @@ public class ConverterConfig {
 
     public ConverterConfig setDateConverter(Function<Date, Object> dateConverter) {
         this.dateConverter = dateConverter;
+        return this;
+    }
+
+    public Function<LocalDateTime, Object> getLocalDateTimeConverter() {
+        return localDateTimeConverter;
+    }
+
+    public ConverterConfig setLocalDateTimeConverter(Function<LocalDateTime, Object> localDateTimeConverter) {
+        this.localDateTimeConverter = localDateTimeConverter;
+        return this;
+    }
+
+    public Function<LocalDate, Object> getLocalDateConverter() {
+        return localDateConverter;
+    }
+
+    public ConverterConfig setLocalDateConverter(Function<LocalDate, Object> localDateConverter) {
+        this.localDateConverter = localDateConverter;
+        return this;
+    }
+
+    public Function<LocalTime, Object> getLocalTimeConverter() {
+        return localTimeConverter;
+    }
+
+    public ConverterConfig setLocalTimeConverter(Function<LocalTime, Object> localTimeConverter) {
+        this.localTimeConverter = localTimeConverter;
+        return this;
+    }
+
+    public Function<ZonedDateTime, Object> getZonedDateTimeConverter() {
+        return zonedDateTimeConverter;
+    }
+
+    public ConverterConfig setZonedDateTimeConverter(Function<ZonedDateTime, Object> zonedDateTimeConverter) {
+        this.zonedDateTimeConverter = zonedDateTimeConverter;
+        return this;
+    }
+
+    public Function<OffsetDateTime, Object> getOffsetDateTimeConverter() {
+        return offsetDateTimeConverter;
+    }
+
+    public ConverterConfig setOffsetDateTimeConverter(Function<OffsetDateTime, Object> offsetDateTimeConverter) {
+        this.offsetDateTimeConverter = offsetDateTimeConverter;
+        return this;
+    }
+
+    public Function<OffsetTime, Object> getOffsetTimeConverter() {
+        return offsetTimeConverter;
+    }
+
+    public ConverterConfig setOffsetTimeConverter(Function<OffsetTime, Object> offsetTimeConverter) {
+        this.offsetTimeConverter = offsetTimeConverter;
+        return this;
+    }
+
+    public Function<Instant, Object> getInstantConverter() {
+        return instantConverter;
+    }
+
+    public ConverterConfig setInstantConverter(Function<Instant, Object> instantConverter) {
+        this.instantConverter = instantConverter;
+        return this;
+    }
+
+    public Function<Duration, Object> getDurationConverter() {
+        return durationConverter;
+    }
+
+    public ConverterConfig setDurationConverter(Function<Duration, Object> durationConverter) {
+        this.durationConverter = durationConverter;
+        return this;
+    }
+
+    public Function<Period, Object> getPeriodConverter() {
+        return periodConverter;
+    }
+
+    public ConverterConfig setPeriodConverter(Function<Period, Object> periodConverter) {
+        this.periodConverter = periodConverter;
         return this;
     }
 }

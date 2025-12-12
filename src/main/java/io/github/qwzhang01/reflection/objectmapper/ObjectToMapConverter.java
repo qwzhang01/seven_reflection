@@ -3,6 +3,8 @@ package io.github.qwzhang01.reflection.objectmapper;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -106,6 +108,73 @@ public class ObjectToMapConverter {
             return value;
         }
 
+        // Java 8+ 时间类型 - 必须在 Date 之前处理，避免反射访问私有字段
+        if (value instanceof LocalDateTime) {
+            return config.getLocalDateTimeConverter() != null ?
+                    config.getLocalDateTimeConverter().apply((LocalDateTime) value) :
+                    ((LocalDateTime) value).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        }
+
+        if (value instanceof LocalDate) {
+            return config.getLocalDateConverter() != null ?
+                    config.getLocalDateConverter().apply((LocalDate) value) :
+                    ((LocalDate) value).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        }
+
+        if (value instanceof LocalTime) {
+            return config.getLocalTimeConverter() != null ?
+                    config.getLocalTimeConverter().apply((LocalTime) value) :
+                    ((LocalTime) value).format(DateTimeFormatter.ISO_LOCAL_TIME);
+        }
+
+        if (value instanceof ZonedDateTime) {
+            return config.getZonedDateTimeConverter() != null ?
+                    config.getZonedDateTimeConverter().apply((ZonedDateTime) value) :
+                    ((ZonedDateTime) value).format(DateTimeFormatter.ISO_ZONED_DATE_TIME);
+        }
+
+        if (value instanceof OffsetDateTime) {
+            return config.getOffsetDateTimeConverter() != null ?
+                    config.getOffsetDateTimeConverter().apply((OffsetDateTime) value) :
+                    ((OffsetDateTime) value).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+        }
+
+        if (value instanceof OffsetTime) {
+            return config.getOffsetTimeConverter() != null ?
+                    config.getOffsetTimeConverter().apply((OffsetTime) value) :
+                    ((OffsetTime) value).format(DateTimeFormatter.ISO_OFFSET_TIME);
+        }
+
+        if (value instanceof Instant) {
+            return config.getInstantConverter() != null ?
+                    config.getInstantConverter().apply((Instant) value) :
+                    ((Instant) value).toString();
+        }
+
+        if (value instanceof Duration) {
+            return config.getDurationConverter() != null ?
+                    config.getDurationConverter().apply((Duration) value) :
+                    ((Duration) value).toString();
+        }
+
+        if (value instanceof Period) {
+            return config.getPeriodConverter() != null ?
+                    config.getPeriodConverter().apply((Period) value) :
+                    ((Period) value).toString();
+        }
+
+        if (value instanceof Year) {
+            return ((Year) value).getValue();
+        }
+
+        if (value instanceof YearMonth) {
+            return ((YearMonth) value).toString();
+        }
+
+        if (value instanceof MonthDay) {
+            return ((MonthDay) value).toString();
+        }
+
         // 日期类型
         if (value instanceof Date) {
             return config.getDateConverter() != null ?
@@ -118,7 +187,8 @@ public class ObjectToMapConverter {
         }
 
         // 自定义转换器
-        TypeConverter converter = TYPE_CONVERTERS.get(valueClass);
+        @SuppressWarnings("unchecked")
+        TypeConverter<Object> converter = (TypeConverter<Object>) TYPE_CONVERTERS.get(valueClass);
         if (converter != null) {
             return converter.convert(value);
         }
