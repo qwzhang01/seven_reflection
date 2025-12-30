@@ -3,6 +3,8 @@ package io.github.qwzhang01.reflection.objectmapper;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -105,6 +107,11 @@ public class ObjectToMapConverter {
 
         // 字符串
         if (value instanceof String) {
+            return value;
+        }
+
+        // BigDecimal 和 BigInteger - 必须在反射处理之前，避免模块访问问题
+        if (value instanceof BigDecimal || value instanceof BigInteger) {
             return value;
         }
 
@@ -312,8 +319,17 @@ public class ObjectToMapConverter {
         }
 
         // 直接访问字段
-        field.setAccessible(true);
-        return new DirectFieldAccessor(name, field);
+        try {
+            field.setAccessible(true);
+            return new DirectFieldAccessor(name, field);
+        } catch (Exception e) {
+            // Java 9+ 模块系统可能阻止访问某些字段
+            // 对于无法访问的字段，返回null，在buildFieldAccessors中会被过滤
+            if (config.isIgnoreErrors()) {
+                return null;
+            }
+            throw new RuntimeException("Cannot access field: " + name, e);
+        }
     }
 
     /**
@@ -356,7 +372,9 @@ public class ObjectToMapConverter {
                 clazz == Integer.class ||
                 clazz == Long.class ||
                 clazz == Float.class ||
-                clazz == Double.class;
+                clazz == Double.class ||
+                clazz == BigDecimal.class ||
+                clazz == BigInteger.class;
     }
 
     /**
